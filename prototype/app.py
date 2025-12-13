@@ -9,6 +9,8 @@ ITEMS = [("🍓", +1),
          ("🍋", +5), 
          ("🍍", +10), 
          ("🍀", +25)]
+JACKPOT_MULTIPLIER = 10
+
 attempt_count = 0
 jackpot_count = 0
 score = 0
@@ -26,7 +28,7 @@ while 1:
         i = taken[0][0]
         jackpot_count += 1
         print(f"[{i} JACKPOT!!! {i}]")
-        gain = 30 * taken[0][1]
+        gain = JACKPOT_MULTIPLIER * taken[0][1]
     else:
         gain = sum([value for (item, value) in taken])
     
