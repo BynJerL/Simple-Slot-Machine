@@ -14,6 +14,7 @@ jackpot_count = 0
 score = 0
 
 while 1:
+    attempt_count += 1
     taken = []
 
     for i in range(3):
