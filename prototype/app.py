@@ -20,9 +20,9 @@ while 1:
     taken = []
 
     for i in range(3):
-        taken.append(random.choice(ITEMS))
+        taken.append(random.choices(ITEMS, weights=[40, 30, 15, 10, 5])[0])
     
-    print(" | ".join(item for item,_ in taken))
+    print(" | ".join(item for item, _ in taken))
 
     if all(x == taken[0] for x in taken):
         i = taken[0][0]
