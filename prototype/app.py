@@ -20,7 +20,7 @@ while 1:
     for i in range(3):
         taken.append(random.choice(ITEMS))
     
-    print(*taken, sep="|")
+    print(" | ".join(item for item,_ in taken))
 
     if all(x == taken[0] for x in taken):
         i = taken[0][0]
