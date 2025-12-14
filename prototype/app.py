@@ -3,13 +3,23 @@ SLOT MACHINE APP
 """
 
 import random
+from dataclasses import dataclass
 
-ITEMS = [("🍓", +1,  35), 
-         ("🍒", +2,  25), 
-         ("🍋", +5,  15), 
-         ("🍍", +10, 10),
-         ("💣", -10, 10), 
-         ("🍀", +25, 5)]
+@dataclass(frozen=True)
+class Symbol:
+    icon: str
+    value: int
+    weight: int
+
+ITEMS = [
+    Symbol("🍓", +1, 35),
+    Symbol("🍒", +2, 25),
+    Symbol("🌽", +4, 15),
+    Symbol("🍋", +8, 10),
+    Symbol("💣", -10, 10),
+    Symbol("🍀", +25, 5)
+]
+
 JACKPOT_MULTIPLIER = 10
 
 class GameError(Exception):
@@ -38,10 +48,10 @@ class Game:
 
     def spin (self):
         for item in range(self.total_item):
-            self.spin_result.append(random.choices(ITEMS, weights=[w for (_, __, w) in ITEMS])[0])
+            self.spin_result.append(random.choices(ITEMS, weights=[item.weight for item in ITEMS])[0])
     
     def show_spin_result (self):
-        print(" | ".join(item for item, _, __ in self.spin_result))
+        print(" | ".join(item.icon for item in self.spin_result))
     
     def show_evaluation (self):
         print("Evaluation:")
@@ -52,16 +62,16 @@ class Game:
         print("Thanks for playing!")
 
     def is_jackpot (self):
-        return all(x == self.spin_result[0] for x in self.spin_result)
+        return all(x.icon == self.spin_result[0].icon for x in self.spin_result)
 
     def scoring (self):
         if self.is_jackpot():
-            item = self.spin_result[0][0]
+            icon = self.spin_result[0].icon
             self.jackpot_count += 1
-            print(f"[{item} JACKPOT!!! {item}]")
-            gain = JACKPOT_MULTIPLIER * self.spin_result[0][1]
+            print(f"[{icon} JACKPOT!!! {icon}]")
+            gain = JACKPOT_MULTIPLIER * self.spin_result[0].value
         else:
-            gain = sum([value for (item, value, weight) in self.spin_result])
+            gain = sum([item.value for item in self.spin_result])
 
         self.current_gain = gain
         self.total_score += gain
@@ -78,6 +88,7 @@ def main ():
     # Setup
     slot_machine = Game()
 
+    # Loop
     while slot_machine.is_running:
         slot_machine.attempt_count += 1
         slot_machine.clean_last_spin_result()
