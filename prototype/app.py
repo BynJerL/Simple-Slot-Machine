@@ -47,9 +47,15 @@ class Game:
         self.spin_result = []
 
     def spin (self):
-        for item in range(self.total_item):
-            self.spin_result.append(random.choices(ITEMS, weights=[item.weight for item in ITEMS])[0])
+        self.attempt_count += 1
+        self.spin_result = self.get_spin()
     
+    def get_spin (self) -> list[Symbol]:
+        spin_result = []
+        for item in range(self.total_item):
+            spin_result.append(random.choices(ITEMS, weights=[item.weight for item in ITEMS])[0])
+        return spin_result
+
     def show_spin_result (self):
         print(" | ".join(item.icon for item in self.spin_result))
     
@@ -90,8 +96,6 @@ def main ():
 
     # Loop
     while slot_machine.is_running:
-        slot_machine.attempt_count += 1
-        slot_machine.clean_last_spin_result()
         slot_machine.spin()
         slot_machine.show_spin_result()
         slot_machine.scoring()
