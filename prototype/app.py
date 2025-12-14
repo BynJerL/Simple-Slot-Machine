@@ -4,6 +4,7 @@ SLOT MACHINE APP
 
 import random
 from dataclasses import dataclass
+from collections import Counter
 
 @dataclass(frozen=True)
 class Symbol:
@@ -20,7 +21,9 @@ ITEMS = [
     Symbol("🍀", +25, 5)
 ]
 
-JACKPOT_MULTIPLIER = 10
+TWO_OF_KIND_MULTIPLIER = 2
+JACKPOT_MULTIPLIER = 5
+BOMB_PENALTY = -3
 
 class GameError(Exception):
     pass
@@ -57,6 +60,9 @@ class Game:
             spin_result.append(random.choices(ITEMS, weights=[item.weight for item in ITEMS])[0])
         return spin_result
 
+    def get_symbol_counts (self):
+        return Counter(item.icon for item in self.spin_result)
+
     def show_spin_result (self):
         print(" | ".join(item.icon for item in self.spin_result))
     
@@ -75,27 +81,44 @@ class Game:
         return any(item.icon == "💣" for item in self.spin_result)
 
     def scoring (self):
-        if self.is_jackpot():
-            icon = self.spin_result[0].icon
-            if icon == "💣":
+        counts = self.get_symbol_counts()
+        symbol_map = {item.icon: item for item in self.spin_result}
+
+        if len(counts) == 1:
+            symbol = symbol_map[next(iter(counts))]
+
+            if symbol.icon == "💣":
                 self.disaster_count += 1
-                print(f"[{icon} DISASTER!!! {icon}]")
+                gain = JACKPOT_MULTIPLIER * symbol.value
+                print(f"[{symbol.icon} DISASTER!!! {symbol.icon}]")
             else:
                 self.jackpot_count += 1
-                print(f"[{icon} JACKPOT!!! {icon}]")
-            gain = JACKPOT_MULTIPLIER * self.spin_result[0].value
-        elif self.is_bomb_on_spin_result():
-            gain = -5
+                gain = JACKPOT_MULTIPLIER * symbol.value
+                print(f"[{symbol.icon} JACKPOT!!! {symbol.icon}]")
+
+        elif 2 in counts.values():
+            icon = next(icon for icon, c in counts.items() if c == 2)
+            symbol = symbol_map[icon]
+
+            if icon == "💣":
+                gain = BOMB_PENALTY
+                print("💣 Two bombs! Minor disaster!")
+            else:
+                gain = symbol.value * TWO_OF_KIND_MULTIPLIER
+                print(f"✨ Two of a kind: {icon}")
+        
+        elif "💣" in counts:
+            gain = BOMB_PENALTY
+            print("💣 Bomb detected!")
+        
         else:
-            gain = sum([item.value for item in self.spin_result])
+            gain = 0
+            print("❌ No match")
 
         self.current_gain = gain
         self.total_score += gain
 
-        if gain >= 0:
-            print(f"Score +{gain}")
-        else:
-            print(f"Score {gain}")
+        print(f"Score {gain:+}")
 
     def end_game (self):
         self.is_running = False
