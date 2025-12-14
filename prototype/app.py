@@ -29,6 +29,7 @@ class Game:
     def __init__ (self, mode = "classic"):
         self.attempt_count  = 0
         self.jackpot_count  = 0
+        self.disaster_count = 0
         self.total_score    = 0
         self.spin_result    = []
         self.current_gain   = 0
@@ -70,12 +71,21 @@ class Game:
     def is_jackpot (self):
         return all(x.icon == self.spin_result[0].icon for x in self.spin_result)
 
+    def is_bomb_on_spin_result (self):
+        return any(item.icon == "💣" for item in self.spin_result)
+
     def scoring (self):
         if self.is_jackpot():
             icon = self.spin_result[0].icon
-            self.jackpot_count += 1
-            print(f"[{icon} JACKPOT!!! {icon}]")
+            if icon == "💣":
+                self.disaster_count += 1
+                print(f"[{icon} DISASTER!!! {icon}]")
+            else:
+                self.jackpot_count += 1
+                print(f"[{icon} JACKPOT!!! {icon}]")
             gain = JACKPOT_MULTIPLIER * self.spin_result[0].value
+        elif self.is_bomb_on_spin_result():
+            gain = -5
         else:
             gain = sum([item.value for item in self.spin_result])
 
