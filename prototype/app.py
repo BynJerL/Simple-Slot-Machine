@@ -13,12 +13,12 @@ class Symbol:
     weight: int
 
 ITEMS = [
-    Symbol("🍓", +1, 35),
-    Symbol("🍒", +2, 25),
-    Symbol("🌽", +4, 15),
-    Symbol("🍋", +8, 10),
-    Symbol("💣", -10, 10),
-    Symbol("🍀", +25, 5)
+    Symbol("🍓", +1, 350),
+    Symbol("🍒", +2, 250),
+    Symbol("🌽", +4, 200),
+    Symbol("🍋", +8, 150),
+    Symbol("💣", -10, 30),
+    Symbol("🍀", +25, 20)
 ]
 
 TWO_OF_KIND_MULTIPLIER = 2
@@ -30,14 +30,17 @@ class GameError(Exception):
 
 class Game:
     def __init__ (self, mode = "classic"):
-        self.attempt_count  = 0
-        self.jackpot_count  = 0
-        self.disaster_count = 0
-        self.total_score    = 0
-        self.spin_result    = []
-        self.current_gain   = 0
-        self.mode           = mode.lower()
-        self.is_running     = True
+        self.attempt_count          = 0
+        self.two_of_a_kind_count    = 0
+        self.jackpot_count          = 0
+        self.disaster_count         = 0
+        self.minor_disaster_count   = 0
+        self.total_score            = 0
+        self.single_bomb_count      = 0
+        self.spin_result            = []
+        self.current_gain           = 0
+        self.mode                   = mode.lower()
+        self.is_running             = True
     
     @property
     def total_item (self) -> int:
@@ -70,6 +73,9 @@ class Game:
         print("Evaluation:")
         print("Total attempt:", self.attempt_count)
         print("Total jackpot:", self.jackpot_count)
+        print("Total two-of-a-kind:", self.two_of_a_kind_count)
+        bomb_count_total = self.disaster_count * 3 + self.minor_disaster_count * 2 + self.single_bomb_count
+        print("Total bomb gained:", bomb_count_total)
         print("Total score:", self.total_score)
         print('='*20)
         print("Thanks for playing!")
@@ -101,13 +107,20 @@ class Game:
             symbol = symbol_map[icon]
 
             if icon == "💣":
+                self.minor_disaster_count += 1
                 gain = BOMB_PENALTY
                 print("💣 Two bombs! Minor disaster!")
+            elif "💣" in counts:
+                self.single_bomb_count += 1
+                gain = BOMB_PENALTY
+                print("💣 Bomb detected!")
             else:
+                self.two_of_a_kind_count += 1
                 gain = symbol.value * TWO_OF_KIND_MULTIPLIER
                 print(f"✨ Two of a kind: {icon}")
         
         elif "💣" in counts:
+            self.single_bomb_count += 1
             gain = BOMB_PENALTY
             print("💣 Bomb detected!")
         
