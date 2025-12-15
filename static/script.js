@@ -16,6 +16,21 @@ const SYMBOL_DATA = {
     "🍀": { value: 25, weight: 3 }
 };
 
+const SFX = {
+    spin: new Audio("assets/sfx/spin.mp3"),
+    stop: new Audio("assets/sfx/reel_stop.mp3"),
+    win: new Audio("assets/sfx/win.mp3"),
+    jackpot: new Audio("assets/sfx/jackpot.mp3"),
+    bomb: new Audio("assets/sfx/bomb.mp3"),
+    end: new Audio("assets/sfx/game_over.mp3")
+};
+
+// Prevent overlap bugs
+function playSFX(sound) {
+    sound.currentTime = 0;
+    sound.play();
+}
+
 const JACKPOT_MULTIPLIER = 10;
 const SPIN_COST = -1;
 const BOMB_PENALTY = -3;
@@ -120,8 +135,10 @@ function finishSpin(results) {
         gain += SYMBOL_DATA[icon].value * JACKPOT_MULTIPLIER;
 
         if (icon === "💣") {
+            playSFX(SFX.bomb);
             alert("💣 DISASTER!!!");
         } else {
+            playSFX(SFX.jackpot);
             alert(`${icon} JACKPOT!!!`);
         }
     }
@@ -131,16 +148,20 @@ function finishSpin(results) {
         const icon = Object.keys(counts).find(k => counts[k] === 2);
 
         if (icon === "💣") {
+            playSFX(SFX.bomb);
             gain += BOMB_PENALTY;
         } else if ("💣" in counts) {
+            playSFX(SFX.bomb);
             gain += 1;
         } else {
+            playSFX(SFX.win);
             gain += SYMBOL_DATA[icon].value * 2;
         }
     }
 
     // --- BOMB (MIXED) ---
     else if ("💣" in counts) {
+        playSFX(SFX.bomb);
         gain += BOMB_PENALTY;
     }
 
