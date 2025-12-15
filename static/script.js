@@ -7,14 +7,13 @@ const endBtn = document.getElementById("endBtn");
 let totalScore = 0;
 let isSpinning = false;
 
-const SYMBOLS = ["🍓", "🍒", "🌽", "🍋", "💣", "🍀"];
 const SYMBOL_DATA = {
-    "🍓": { value: 1 },
-    "🍒": { value: 2 },
-    "🌽": { value: 4 },
-    "🍋": { value: 8 },
-    "💣": { value: -10 },
-    "🍀": { value: 25 }
+    "🍓": { value: 1,  weight: 30 },
+    "🍒": { value: 2,  weight: 25 },
+    "🌽": { value: 4,  weight: 20 },
+    "🍋": { value: 8,  weight: 15 },
+    "💣": { value: -10, weight: 7 },
+    "🍀": { value: 25, weight: 3 }
 };
 
 const JACKPOT_MULTIPLIER = 10;
@@ -26,7 +25,16 @@ function setScore(element, value) {
 }
 
 function randomSymbol() {
-    return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+    const pool = [];
+
+    for (const symbol in SYMBOL_DATA) {
+        const { weight } = SYMBOL_DATA[symbol];
+        for (let i = 0; i < weight; i++) {
+            pool.push(symbol);
+        }
+    }
+
+    return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function spin() {
