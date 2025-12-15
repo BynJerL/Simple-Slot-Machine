@@ -17,6 +17,8 @@ const SYMBOL_DATA = {
 };
 
 const JACKPOT_MULTIPLIER = 10;
+const SPIN_COST = -1;
+const BOMB_PENALTY = -3;
 
 function setScore(element, value) {
     element.textContent = value > 0? `+${value}` : `${value}`;
@@ -83,12 +85,12 @@ function finishSpin(results) {
     const counts = {};
     results.forEach(s => counts[s] = (counts[s] || 0) + 1);
 
-    let gain = 0;
+    let gain = SPIN_COST;
 
     // --- JACKPOT ---
     if (Object.keys(counts).length === 1) {
         const icon = results[0];
-        gain = SYMBOL_DATA[icon].value * JACKPOT_MULTIPLIER;
+        gain += SYMBOL_DATA[icon].value * JACKPOT_MULTIPLIER;
 
         if (icon === "💣") {
             alert("💣 DISASTER!!!");
@@ -102,22 +104,22 @@ function finishSpin(results) {
         const icon = Object.keys(counts).find(k => counts[k] === 2);
 
         if (icon === "💣") {
-            gain = -5;
+            gain += BOMB_PENALTY;
         } else if ("💣" in counts) {
-            gain = 0;
+            gain += 1;
         } else {
-            gain = SYMBOL_DATA[icon].value * 2;
+            gain += SYMBOL_DATA[icon].value * 2;
         }
     }
 
     // --- BOMB (MIXED) ---
     else if ("💣" in counts) {
-        gain = -5;
+        gain += BOMB_PENALTY;
     }
 
     // --- NO MATCH ---
     else {
-        gain = 0;
+        gain += 0;
     }
 
     totalScore += gain;
