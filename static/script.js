@@ -95,6 +95,8 @@ function finishSpin(results) {
 
         if (icon === "💣") {
             gain = -5;
+        } else if ("💣" in counts) {
+            gain = 0;
         } else {
             gain = SYMBOL_DATA[icon].value * 2;
         }

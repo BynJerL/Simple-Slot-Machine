@@ -112,7 +112,7 @@ class Game:
                 print("💣 Two bombs! Minor disaster!")
             elif "💣" in counts:
                 self.single_bomb_count += 1
-                gain = BOMB_PENALTY
+                gain = 0
                 print("💣 Bomb detected!")
             else:
                 self.two_of_a_kind_count += 1
