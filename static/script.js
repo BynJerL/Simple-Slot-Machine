@@ -26,17 +26,44 @@ function setScore(element, value) {
     element.classList.add(value >= 0 ? "positive" : "negative");
 }
 
-function randomSymbol() {
-    const pool = [];
+function getDifficultyMultiplier() {
+    if (totalScore < 20) return 1;
+    if (totalScore < 50) return 1.3;
+    if (totalScore < 100) return 1.7;
+    return 2.2;
+}
 
-    for (const symbol in SYMBOL_DATA) {
-        const { weight } = SYMBOL_DATA[symbol];
-        for (let i = 0; i < weight; i++) {
-            pool.push(symbol);
+function randomSymbol() {
+    const difficulty = getDifficultyMultiplier();
+
+    const weightedPool = [];
+
+    for (const icon in SYMBOL_DATA) {
+        let weight = SYMBOL_DATA[icon].weight;
+
+        // Bomb becomes more likely
+        if (icon === "💣") {
+            weight *= difficulty;
         }
+
+        // Clover becomes rarer
+        if (icon === "🍀") {
+            weight /= difficulty;
+        }
+
+        weightedPool.push({ icon, weight });
     }
 
-    return pool[Math.floor(Math.random() * pool.length)];
+    const totalWeight = weightedPool.reduce((sum, i) => sum + i.weight, 0);
+    let roll = Math.random() * totalWeight;
+
+    for (const item of weightedPool) {
+        roll -= item.weight;
+        if (roll <= 0) return item.icon;
+    }
+
+    // Safety fallback
+    return weightedPool[0].icon;
 }
 
 function spin() {
