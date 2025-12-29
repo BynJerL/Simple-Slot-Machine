@@ -16,33 +16,68 @@ SYMBOLS = [
     Symbol("💎", 8)
 ]
 
-roll_result = []
-win_point = 0
+class SlotMachine3x3:
+    SIZE = 3
 
-for i in range(3):
-    roll_result_row = []
-    for j in range(3):
-        rolled_symbol = random.choice(SYMBOLS)
-        roll_result_row.append(rolled_symbol)
-    roll_result.append(roll_result_row)
+    def __init__(self):
+        self.board = []
+        self.total_score = 0
 
-for row in roll_result:
-    for cell in row:
-        print(cell.icon, end="")
-    print()
+    def spin(self):
+        self.board = [
+            [random.choice(SYMBOLS) for _ in range(self.SIZE)]
+            for _ in range(self.SIZE)
+        ]
 
-for row in roll_result:
-    if row[0].icon == row[1].icon == row[2].icon:
-        win_point += 1
+    def display(self):
+        for row in self.board:
+            print(" ".join(cell.icon for cell in row))
+        print()
 
-for i in range(len(roll_result)):
-    if roll_result[0][i] == roll_result[1][i] == roll_result[2][i]:
-        win_point += 1
+    def get_paylines(self):
+        lines = []
 
-if roll_result[0][0] == roll_result[1][1] == roll_result[2][2]:
-    win_point += 1
+        # Rows
+        for r in range(self.SIZE):
+            lines.append([self.board[r][c] for c in range(self.SIZE)])
 
-if roll_result[0][2] == roll_result[1][1] == roll_result[2][0]:
-    win_point += 1
+        # Columns
+        for c in range(self.SIZE):
+            lines.append([self.board[r][c] for r in range(self.SIZE)])
 
-print(win_point)
+        # Diagonals
+        lines.append([self.board[i][i] for i in range(self.SIZE)])
+        lines.append([self.board[i][self.SIZE - 1 - i] for i in range(self.SIZE)])
+
+        return lines
+
+    def evaluate(self):
+        gain = 0
+        paylines = self.get_paylines()
+
+        for line in paylines:
+            if all(symbol == line[0] for symbol in line):
+                multiplier = 2 if self.is_diagonal(line) else 1
+                line_gain = line[0].value * multiplier
+                gain += line_gain
+
+        self.total_score += gain
+        return gain
+
+    def is_diagonal(self, line):
+        diag1 = [self.board[i][i] for i in range(self.SIZE)]
+        diag2 = [self.board[i][self.SIZE - 1 - i] for i in range(self.SIZE)]
+        return line == diag1 or line == diag2
+
+
+def main():
+    game = SlotMachine3x3()
+
+    game.spin()
+    game.display()
+    gain = game.evaluate()
+    print(f"Gain: +{gain}")
+    print(f"Total Score: {game.total_score}")
+
+if __name__ == "__main__":
+    main()
