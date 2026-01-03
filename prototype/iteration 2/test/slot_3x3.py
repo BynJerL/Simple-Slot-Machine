@@ -8,12 +8,18 @@ class Symbol:
 
 SYMBOLS = [
     Symbol("🍒", 1),
-    Symbol("🍓", 2),
+    Symbol("🍋", 2),
+    Symbol("🍊", 2),
+    Symbol("🍓", 3),
     Symbol("🍇", 3),
-    Symbol("🍋", 5),
-    Symbol("🔔", 6),
-    Symbol("🍀", 7),
-    Symbol("💎", 8)
+    Symbol("♠️", 5),
+    Symbol("♣️", 5),
+    Symbol("♥️", 5),
+    Symbol("♦️", 5),
+    Symbol("🔔", 10),
+    Symbol("🍀", 10),
+    Symbol("💎", 50),
+    Symbol("⭐", 50),
 ]
 
 class SlotMachine3x3:
