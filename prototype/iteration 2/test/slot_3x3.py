@@ -41,9 +41,9 @@ class SlotMachine3x3:
         for r in range(self.SIZE):
             lines.append([self.board[r][c] for c in range(self.SIZE)])
 
-        # Columns
-        for c in range(self.SIZE):
-            lines.append([self.board[r][c] for r in range(self.SIZE)])
+        # Columns (Unused)
+        # for c in range(self.SIZE):
+        #     lines.append([self.board[r][c] for r in range(self.SIZE)])
 
         # Diagonals
         lines.append([self.board[i][i] for i in range(self.SIZE)])
