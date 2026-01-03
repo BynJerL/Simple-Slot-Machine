@@ -5,33 +5,37 @@ from dataclasses import dataclass
 class Symbol:
     icon: str
     value: int
+    weight: int = 1
     wild: bool = False
     scatter: bool = False
     doubler: bool = False
     bomb: bool = False
 
 SYMBOLS = [
-    Symbol("🍒", 1),
-    Symbol("🍋", 2),
-    Symbol("🍊", 2),
-    Symbol("🍓", 3),
-    Symbol("🍇", 3),
-    Symbol("♠️", 5),
-    Symbol("♣️", 5),
-    Symbol("♥️", 5),
-    Symbol("♦️", 5),
-    Symbol("🔔", 10),
-    Symbol("🍀", 10),
-    Symbol("💎", 50),
-    Symbol("⭐", 50),
+    Symbol("🍒", 1, weight=10),
+    Symbol("🍋", 2, weight=10),
+    Symbol("🍊", 2, weight=10),
+
+    Symbol("🍓", 3, weight=5),
+    Symbol("🍇", 3, weight=5),
+    Symbol("♠️", 5, weight=5),
+    Symbol("♣️", 5, weight=5),
+    Symbol("♥️", 5, weight=5),
+    Symbol("♦️", 5, weight=5),
+
+    Symbol("🔔", 10, weight=2),
+    Symbol("🍀", 10, weight=2),
+    
+    Symbol("💎", 50, weight=1),
+    Symbol("⭐", 50, weight=1),
 
     # Specials
-    Symbol("🃏", 0, wild=True),
-    Symbol("💵", 5, scatter=True),
-    Symbol("🎰", 8, scatter=True),
-    Symbol("2️⃣", 0, doubler=True),
-    Symbol("❌", 0, doubler=True),
-    Symbol("💣", 0, bomb=True)
+    Symbol("🃏", 0, weight=3, wild=True),
+    Symbol("💵", 5, weight=4, scatter=True),
+    Symbol("🎰", 8, weight=3, scatter=True),
+    Symbol("2️⃣", 0, weight=2, doubler=True),
+    Symbol("❌", 0, weight=2, doubler=True),
+    Symbol("💣", 0, weight=1, bomb=True)
 ]
 
 class SlotMachine3x3:
@@ -43,8 +47,10 @@ class SlotMachine3x3:
         self.total_score = 0
 
     def spin(self):
+        symbols = SYMBOLS
+        weights = [s.weight for s in symbols]
         self.board = [
-            [random.choice(SYMBOLS) for _ in range(self.SIZE)]
+            [random.choices(symbols, weights=weights, k=1)[0] for _ in range(self.SIZE)]
             for _ in range(self.SIZE)
         ]
 
