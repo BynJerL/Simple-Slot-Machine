@@ -23,8 +23,20 @@ const SYMBOLS_DATA = {
 
 function getRandomSymbol() {
     const symbolKeys = Object.keys(SYMBOLS_DATA);
-    const randomKey = symbolKeys[Math.floor(Math.random() * symbolKeys.length)];
-    return randomKey;
+    const weights = symbolKeys.map(key => SYMBOLS_DATA[key].weight);
+    
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+    let random = Math.random() * totalWeight;
+
+    for (let i = 0; i < symbolKeys.length; i++) {
+        random -= weights[i];
+        if (random <= 0) {
+            return symbolKeys[i];
+        }
+    }
+
+    return symbolKeys[symbolKeys.length - 1];
 }
 
 function rollMachine () {
