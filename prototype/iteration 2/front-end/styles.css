@@ -1,0 +1,15 @@
+div#slot-display {
+    display: flex;
+}
+
+div.symbol {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    border: 1px solid black;
+    margin: 1px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
